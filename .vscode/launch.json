@@ -1,0 +1,17 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Launch Engine - Debug",
+            "program": "${env:home}/engine/target/debug/platform_native",
+            "preLaunchTask": "Build + Copy Library + Assets",
+            "args": [],
+            "env": {
+                "RUST_BACKTRACE": "1"
+            },
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}

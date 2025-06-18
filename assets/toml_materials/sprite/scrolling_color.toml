@@ -1,0 +1,17 @@
+get_world_offset = """
+return vec2f(0., 0.);
+"""
+
+get_fragment_color = """
+let offset = scene_instance.time * scene_instance.scroll_speed;
+let two_pi = 6.2831;
+let r = sin((uv0.x + offset) * two_pi) * 0.5 + 0.5;
+let g = sin((uv0.x + offset + 0.333) * two_pi) * 0.5 + 0.5;
+let b = sin((uv0.x + offset + 0.666) * two_pi) * 0.5 + 0.5;
+
+return vec4<f32>(r, g, b, 1.0); // Final color
+"""
+
+[uniform_types]
+time = "f32"
+scroll_speed = "f32"

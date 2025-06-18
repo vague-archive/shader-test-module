@@ -1,0 +1,32 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build + Copy Library",
+            "type": "process",
+            "windows":{
+                "command": "cargo-fiasco.exe",
+                "args": ["build", "--copy", "${env:home}/engine/target/debug", "--symbols"]
+            },
+            "command": "cargo-fiasco",
+            "args": ["build", "--copy", "${env:home}/engine/target/debug", "--symbols"]
+        },
+        {
+            "label": "Copy Assets",
+            "type": "shell",
+            "windows": {
+                "command": "Xcopy",
+                "args": ["assets", "${env:home}/engine/target/debug/", "/E"]
+            },
+            "command": "cp",
+            "args": ["-R", "assets", "${env:home}/engine/target/debug/"]
+        },
+        {
+            "label": "Build + Copy Library + Assets",
+            "dependsOn": [
+                "Build + Copy Library",
+                "Copy Assets"
+            ]
+        }
+    ]
+}

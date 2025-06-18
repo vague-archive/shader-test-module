@@ -1,0 +1,12 @@
+get_world_offset = """
+return vec2f(0., 0.);
+"""
+
+get_fragment_color = """
+let sprite_color = textureSample(color_tex, sampler_color_tex, uv0.xy);
+var dot_op = dot(sprite_color.xyz, vec3f(0.299, 0.587, 0.114));
+return vec4(dot_op, dot_op, dot_op, 1.);
+"""
+
+[texture_descs]
+color_tex = "linear"

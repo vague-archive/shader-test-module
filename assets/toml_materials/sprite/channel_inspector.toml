@@ -1,0 +1,16 @@
+get_world_offset = """
+return vec2f(0., 0.);
+"""
+
+get_fragment_color = """
+let sprite_color = textureSample(map, sampler_map, uv0.xy);
+let normalized_channel_index = u32(clamp(scene_instance.channel, 0.0, 3.0));
+let channel_color_value = sprite_color[normalized_channel_index];
+return vec4(channel_color_value, channel_color_value, channel_color_value, channel_color_value);
+"""
+
+[uniform_types]
+channel = "f32"
+
+[texture_descs]
+map = "linear"

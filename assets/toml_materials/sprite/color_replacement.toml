@@ -1,0 +1,18 @@
+get_world_offset = """
+return vec2f(0., 0.);
+"""
+
+get_fragment_color = """
+let sprite_color = textureSample(color_tex, sampler_color_tex, uv0.xy);
+if (abs(length(sprite_color - scene_instance.color_to_replace)) < 0.01) {
+    return scene_instance.color_to_insert;
+}
+return sprite_color;
+"""
+
+[uniform_types]
+color_to_replace = { type = "vec4f", default = [0.0, 1.0, 0.0, 1.0] }
+color_to_insert = { type = "vec4f", default = [0.0, 1.0, 0.0, 1.0] }
+
+[texture_descs]
+color_tex = "linear"

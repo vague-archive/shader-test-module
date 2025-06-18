@@ -1,0 +1,28 @@
+[package]
+name = "shader-test-module"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+game_asset = { git = "ssh://git@github.com/vaguevoid/engine.git" }
+game_module_macro = { git = "ssh://git@github.com/vaguevoid/engine.git" }
+snapshot = { git = "ssh://git@github.com/vaguevoid/engine.git" }
+void_public = { git = "ssh://git@github.com/vaguevoid/engine.git" }
+
+log = "0.4.16"
+rand = "0.8.5"
+serde = { version = "1.0.210", features = ["derive"] }
+serde-big-array = "0.5.1"
+serde_json = "1.0"
+
+[build-dependencies]
+build_tools = { git = "ssh://git@github.com/vaguevoid/engine.git" }
+
+[lib]
+crate-type = ["cdylib"]
+bench = false
+
+[dev-dependencies]
+game_asset = { git = "ssh://git@github.com/vaguevoid/engine.git", features = ["internal_features"] }
+naga = { version = "22.1.0", features = ["wgsl-in"] }
+serde = { version = "1.0.210", features = ["derive"] }

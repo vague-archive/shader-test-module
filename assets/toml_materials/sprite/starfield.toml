@@ -1,0 +1,89 @@
+get_world_offset = """
+return vec2f(0., 0.);
+"""
+
+get_fragment_color = """
+var output_color = vec4(0.0, 0.0, 0.0, 1.0);
+
+// background stars
+
+let random_value = textureSample(random, sampler_random, uv0.xy);
+var background_star_color = vec4(random_value.x);
+background_star_color *= pow(random_value.x, 25.);
+background_star_color *= mix(scene_instance.cold_star_color, scene_instance.hot_star_color, random_value.y);
+output_color += background_star_color;
+
+// milky way
+
+let midpoint_adjustment = 0.5;
+var milky_way_color = vec4(midpoint_adjustment) - vec4(length(vec2(uv0.x, midpoint_adjustment) - uv0));
+let star_color_blend = mix(scene_instance.cold_star_color, scene_instance.hot_star_color, 0.75);
+milky_way_color.x *= star_color_blend.x;
+milky_way_color.y *= star_color_blend.y;
+milky_way_color.z *= star_color_blend.z;
+output_color += milky_way_color * 2.0;
+
+var milky_way_transparency_adjustment = 0.0;
+let uv_adjustment = 12.;
+var time_adjusted_uv = uv0 / uv_adjustment;
+time_adjusted_uv.x -= scene_instance.time_elapsed * scene_instance.speed * (1. / uv_adjustment);
+let number_of_smoothing_loops = 2;
+let smoothing_random_value = textureSample(random, sampler_random, uv0.yx);
+for (var i = 0; i < number_of_smoothing_loops; i++) {
+    milky_way_transparency_adjustment += textureSample(random, sampler_random, time_adjusted_uv * 0.25 + random_value[i] * (16. * scene_instance.texture_height) / f32(number_of_smoothing_loops)).x;
+}
+output_color -= milky_way_transparency_adjustment * 0.2;
+output_color = clamp(output_color, vec4(0.0), vec4(1.0));
+
+// foreground stars
+
+let fast_star_sample_offset = uv0.xy + vec2(-scene_instance.time_elapsed * scene_instance.speed, 0.0);
+let fast_star_sample = textureSample(star_map, sampler_star_map, fast_star_sample_offset);
+let fast_star_number = clamp(0.0, 255.0, scene_instance.star_number);
+var fast_star_halo = fast_star_sample.x * 0.3;
+fast_star_halo *= mix(random_value.x, 1., abs(cos(scene_instance.time_elapsed * random_value.y * 5.)));
+let fast_star_center_color = smoothstep(vec4(0.8), vec4(1.0), vec4(fast_star_sample.x)) * 15.0;
+let fast_star_step = step(fast_star_sample.y * 255, fast_star_number);
+var fast_star_color = vec4(fast_star_halo) + vec4(fast_star_center_color);
+fast_star_color *= 2*mix(scene_instance.cold_star_color, scene_instance.hot_star_color, random_value.z);
+fast_star_color *= fast_star_step;
+
+let medium_star_sample_offset = uv0.xy + vec2(0.25, 0.25) + vec2(-scene_instance.time_elapsed * scene_instance.speed * 0.7, 0.0);
+let medium_star_sample = textureSample(star_map, sampler_star_map, medium_star_sample_offset);
+let medium_star_number = clamp(0.0, 255.0, scene_instance.star_number);
+var medium_star_halo = medium_star_sample.x * 0.3;
+medium_star_halo *= mix(random_value.x, 1., abs(cos(scene_instance.time_elapsed * random_value.y * 5.)));
+let medium_star_center_color = smoothstep(vec4(0.8), vec4(1.0), vec4(medium_star_sample.x)) * 15.0;
+let medium_star_step = step(medium_star_sample.y, medium_star_number);
+var medium_star_color = vec4(medium_star_halo) + vec4(medium_star_center_color);
+medium_star_color *= 2*mix(scene_instance.cold_star_color, scene_instance.hot_star_color, random_value.z);
+medium_star_color *= medium_star_step;
+
+let slow_star_sample_offset = uv0.xy + vec2(0.25, 0.25) + vec2(-scene_instance.time_elapsed * scene_instance.speed * 0.7, 0.0);
+let slow_star_sample = textureSample(star_map, sampler_star_map, slow_star_sample_offset);
+let slow_star_number = clamp(0.0, 255.0, scene_instance.star_number);
+var slow_star_halo = slow_star_sample.x * 0.3;
+slow_star_halo *= mix(random_value.x, 1., abs(cos(scene_instance.time_elapsed * random_value.y * 5.)));
+let slow_star_center_color = smoothstep(vec4(0.8), vec4(1.0), vec4(slow_star_sample.x)) * 15.0;
+let slow_star_step = step(slow_star_sample.y, slow_star_number);
+var slow_star_color = vec4(slow_star_halo) + vec4(slow_star_center_color);
+slow_star_color *= 2*mix(scene_instance.cold_star_color, scene_instance.hot_star_color, random_value.z);
+slow_star_color *= slow_star_step;
+
+output_color += vec4(fast_star_color);
+output_color += vec4(medium_star_color);
+output_color += vec4(slow_star_color);
+return output_color;
+"""
+
+[uniform_types]
+cold_star_color = { type = "vec4f", default = [0.6055, 0.6875, 1.0 ,1.0] }
+hot_star_color = { type = "vec4f", default = [1.0, 0.7969, 0.4336, 1.0] }
+texture_height = "f32"
+speed = { type = "f32", default = 0.1 }
+star_number = { type = "f32", default = 100.0 }
+time_elapsed = "f32"
+
+[texture_descs]
+star_map = "linear"
+random = "nearest"

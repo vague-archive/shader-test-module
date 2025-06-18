@@ -1,0 +1,15 @@
+get_world_offset = """
+return vec2f(0., 0.);
+"""
+
+get_fragment_color = """
+var uv_x = uv0.x + sin(uv0.y * 10.) * 0.1 + scene_instance.param_0;
+
+return textureSample(scene_color_texture, sampler_scene_color_texture, vec2f(uv_x, uv0.y));
+"""
+
+[uniform_types]
+param_0 = { type = "f32", default = 0.5 }
+
+[texture_descs]
+scene_color_texture = "linear"
